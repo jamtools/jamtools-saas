@@ -28,8 +28,8 @@ jobs:
       working-directory: tests-e2e
 
     - name: Run server with coverage
-      run: npm run start-coverage
-      background: true
+      run: npm run start-coverage &
+
       env:
         CI: true
 
