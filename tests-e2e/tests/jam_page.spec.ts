@@ -10,7 +10,7 @@ test('test', async ({page}) => {
     await page.locator('#firstname').fill('Michael');
     await page.getByRole('button', {name: 'Submit'}).click();
 
-    await wait();
+    await wait(100);
 
     expect(page.url()).toBe('http://localhost:5005/jam');
 
