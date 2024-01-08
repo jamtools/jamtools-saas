@@ -54,19 +54,25 @@ export const JamView = () => {
 
 const DraftViewSection = (props: {selectedChords: string[]}) => {
     return (
-        <div>
+        <div class='drafted-chords'>
             {props.selectedChords.map((chordName) => (
-                <span style={{margin: '20px'}}>{chordName}</span>
+                <span
+                    class='displayed-chord'
+                    style={{margin: '20px'}}
+                >
+                    {chordName}
+                </span>
             ))}
         </div>
-    )
+    );
 }
 
 const ChordSelectorSection = (props: {availableChords: string[]}) => {
     return (
-        <div>
+        <div class='chord-buttons'>
             {props.availableChords.map((chordName) => (
                 <button
+                    class='chord-button'
                     hx-post={ROUTES.JAM_ACTIONS_ADD_CHORD + '?chord=' + chordName}
                     hx-target='#jam-view'
                     hx-swap='outerHTML'
