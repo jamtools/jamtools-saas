@@ -11,8 +11,7 @@ export class JamPage {
 
     clickButtons = async (names: string[]) => {
         for (const name of names) {
-            await this.page.getByRole('button', {name}).click();
-            await new Promise((resolve) => setTimeout(resolve, 10));
+            await this.clickButton(name);
         }
     }
 }

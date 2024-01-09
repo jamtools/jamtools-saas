@@ -21,7 +21,7 @@
   "scripts": {
     "start": "ts-node server/src/index.ts",
     "build": "ts-node esbuild.config.ts",
-    "start-coverage": "nyc --reporter=lcov node dist/server/index.js",
+    "start-coverage": "nyc --reporter=lcov --reporter=text ts-node server/src/index.ts",
     "dev": "ts-node-dev --respawn --transpile-only server/src/index.ts",
     "build-coverage": "COVERAGE=true npm run build",
     "test-e2e": "npm test --prefix tests-e2e"
