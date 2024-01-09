@@ -28,8 +28,9 @@ jobs:
       working-directory: tests-e2e
 
     - name: Run server with coverage
-      run: npm run start-coverage &
-
+      run: |
+        npm run start-coverage &
+        echo $! > server.pid
       env:
         CI: true
 
@@ -38,6 +39,9 @@ jobs:
       working-directory: tests-e2e
       env:
         CI: true
+
+    - name: Stop server
+      run: kill $(cat server.pid)
 
     - uses: actions/upload-artifact@v3
       if: always()
