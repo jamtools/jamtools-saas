@@ -30,7 +30,7 @@ jobs:
     - name: Run server with coverage
       run: |
         npm run start-coverage > server.log 2>&1 &
-        SERVER_PID=$!
+        echo $! > server.pid
       env:
         CI: true
 
@@ -42,7 +42,8 @@ jobs:
 
     - name: Stop server
       run: |
-        kill -SIGINT $SERVER_PID
+        SERVER_PID=$(cat server.pid)
+        kill $SERVER_PID
         wait $SERVER_PID
 
     - uses: actions/upload-artifact@v3
