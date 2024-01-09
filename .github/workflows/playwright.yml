@@ -29,8 +29,8 @@ jobs:
 
     - name: Run server with coverage
       run: |
-        npm run start-coverage &
-        echo $! > server.pid
+        npm run start-coverage > server.log 2>&1 &
+        SERVER_PID=$!
       env:
         CI: true
 
@@ -41,7 +41,9 @@ jobs:
         CI: true
 
     - name: Stop server
-      run: kill $(cat server.pid)
+      run: |
+        kill -SIGINT $SERVER_PID
+        wait $SERVER_PID
 
     - uses: actions/upload-artifact@v3
       if: always()
@@ -55,4 +57,11 @@ jobs:
       with:
         name: coverage-report
         path: coverage
+        retention-days: 30
+
+    - uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: server-log
+        path: server.log
         retention-days: 30
