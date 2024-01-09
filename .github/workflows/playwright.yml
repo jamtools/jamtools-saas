@@ -43,8 +43,9 @@ jobs:
     - name: Stop server
       run: |
         SERVER_PID=$(cat server.pid)
+        sleep 5
         kill $SERVER_PID
-        sleep 2
+        sleep 5
 
     - uses: actions/upload-artifact@v3
       if: always()
