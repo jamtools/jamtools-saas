@@ -72,7 +72,7 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  webServer: {
+  webServer: process.env.CI ? undefined :{
     command: 'npm run start-coverage',
     cwd: '..',
     url: 'http://127.0.0.1:5005',
