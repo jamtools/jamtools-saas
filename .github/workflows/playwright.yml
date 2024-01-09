@@ -44,7 +44,7 @@ jobs:
       run: |
         SERVER_PID=$(cat server.pid)
         kill $SERVER_PID
-        wait $SERVER_PID
+        sleep 2
 
     - uses: actions/upload-artifact@v3
       if: always()
