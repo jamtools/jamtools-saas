@@ -5,7 +5,7 @@ import {JamPage} from '../support/components/jam_page_pom';
 const wait = (ms = 10) => new Promise((resolve) => setTimeout(resolve, ms));
 
 test('test', async ({page}) => {
-    await page.goto('/');
+    await page.goto('');
 
     await page.locator('#firstname').fill('Michael');
     await page.getByRole('button', {name: 'Submit'}).click();
