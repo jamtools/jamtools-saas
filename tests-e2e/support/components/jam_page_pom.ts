@@ -1,3 +1,5 @@
+import {Page} from '@playwright/test';
+
 export class JamPage {
     constructor(private readonly page: Page) {}
 
@@ -5,7 +7,7 @@ export class JamPage {
     chordButtons = this.page.locator('.chord-button');
 
     clickButton = async (name: string) => {
-        await this.page.getByRole('button', {name}).click();
+        await this.page.getByRole('button', {name, exact: true}).click();
         return new Promise((resolve) => setTimeout(resolve, 10));
     }
 
@@ -13,5 +15,10 @@ export class JamPage {
         for (const name of names) {
             await this.clickButton(name);
         }
+    }
+
+    clickNewJam = async () => {
+        await this.page.getByRole('button', {name: 'New Jam', exact: true}).click();
+        return new Promise((resolve) => setTimeout(resolve, 10));
     }
 }

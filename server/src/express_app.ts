@@ -1,9 +1,10 @@
-import express from 'express';
+import express, {Router} from 'express';
+import expressWs from 'express-ws';
 
 import {AppDependencies} from './types/app_dependencies';
 import {renderLayout} from './views/layout';
 import {loginRouter, renderLoginPage} from './modules/login';
-import {jamRouter, renderJamPage} from './modules/jam';
+import {initJamRouterWebsocket, jamRouter, renderJamPage} from './modules/jam';
 
 const handlePage = (renderer: () => string | Promise<string>): express.Handler => async (req, res, next) => {
     const page = await Promise.resolve(renderer());
@@ -14,7 +15,7 @@ const handlePage = (renderer: () => string | Promise<string>): express.Handler =
 };
 
 export const initApp = (deps: AppDependencies) => {
-    const app = express();
+    const app = expressWs(express()).app;
 
     app.get('/', handlePage(renderLoginPage));
 
@@ -23,6 +24,8 @@ export const initApp = (deps: AppDependencies) => {
 
     app.use(jamRouter);
     app.use(loginRouter);
+
+    initJamRouterWebsocket();
 
     return app;
 };
