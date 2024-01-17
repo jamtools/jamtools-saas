@@ -5,7 +5,6 @@ import {JamPage} from '../support/components/jam_page_pom';
 const wait = (ms = 10) => new Promise((resolve) => setTimeout(resolve, ms));
 
 test.describe('Jam page', () => {
-
     test('basic usage', async ({page}) => {
         await page.goto('/');
 
