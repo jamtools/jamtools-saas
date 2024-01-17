@@ -25,7 +25,8 @@
   "scripts": {
     "start": "node dist/server/index.js",
     "build": "ts-node esbuild.config.ts",
-    "lint": "@biomejs/biome lint server",
+    "lint": "biome lint server",
+    "ci": "biome ci server",
     "start-coverage": "nyc --reporter=lcov --reporter=text ts-node server/src/index.ts",
     "dev": "ts-node-dev --respawn --transpile-only server/src/index.ts",
     "build-coverage": "COVERAGE=true npm run build",
