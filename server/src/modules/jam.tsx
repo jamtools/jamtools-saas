@@ -8,6 +8,7 @@ export const jamRouter = express.Router();
 
 enum ROUTES {
     JAM_ACTIONS_ADD_CHORD = '/jam/actions/add_chord',
+    JAM_ACTIONS_NEW_JAM = '/jam/actions/new_jam',
 }
 
 type JamState = {
@@ -36,6 +37,11 @@ jamRouter.post<undefined, JSX.Element, undefined, {chord: string}>(ROUTES.JAM_AC
     res.send(JamView());
 });
 
+jamRouter.post<undefined, JSX.Element>(ROUTES.JAM_ACTIONS_NEW_JAM, (req, res) => {
+    jamState.selectedChords = [];
+    res.send(JamView());
+});
+
 export const renderJamPage = () => {
     return JamView();
 };
@@ -46,6 +52,7 @@ export const JamView = () => {
 
     return (
         <div id='jam-view' style={{textAlign: 'center'}}>
+            <NewJamButton/>
             <ChordSelectorSection availableChords={chordNames} />
             <DraftViewSection selectedChords={selectedChords} />
         </div>
@@ -86,5 +93,23 @@ const ChordSelectorSection = (props: {availableChords: string[]}) => {
                 </button>
             ))}
         </div>
-    )
+    );
 }
+
+const NewJamButton = () => {
+    return (
+        <button
+            class='chord-button'
+            hx-post={ROUTES.JAM_ACTIONS_NEW_JAM}
+            hx-target='#jam-view'
+            hx-swap='outerHTML'
+            style={{
+                maxWidth: '100px',
+                margin: '20px',
+            }}
+            role="button"
+        >
+            {'New Jam'}
+        </button>
+    )
+};
