@@ -19,7 +19,9 @@
 			"enabled": true,
 			"jsxQuoteStyle": "single",
 			"semicolons": "always",
-			"bracketSpacing": false
+			"bracketSpacing": false,
+			"bracketSameLine": false,
+			"quoteStyle": "single"
 		}
 	}
 }

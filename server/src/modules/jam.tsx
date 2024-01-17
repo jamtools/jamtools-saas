@@ -16,22 +16,12 @@ enum ROUTES {
 type JamState = {
     availableChords: string[];
     selectedChords: string[];
-}
-
-const jamState: JamState = {
-    availableChords: [
-        'C',
-        'Dm',
-        'Em',
-        'F',
-        'G',
-        'Am',
-    ],
-    selectedChords: [
-
-    ],
 };
 
+const jamState: JamState = {
+    availableChords: ['C', 'Dm', 'Em', 'F', 'G', 'Am'],
+    selectedChords: [],
+};
 
 const connectedSockets: WebSocket[] = [];
 
@@ -49,7 +39,6 @@ export const initJamRouterWebsocket = () => {
             console.log('ws closed');
             connectedSockets.splice(connectedSockets.indexOf(ws), 1);
         });
-
     });
 };
 
@@ -57,22 +46,28 @@ const refreshAll = () => {
     for (const ws of connectedSockets) {
         ws.send(JamView().toString());
     }
-}
+};
 
-jamRouter.post<undefined, JSX.Element, undefined, {chord: string}>(ROUTES.JAM_ACTIONS_ADD_CHORD, (req, res) => {
-    const {chord} = req.query;
-    jamState.selectedChords.push(chord);
+jamRouter.post<undefined, JSX.Element, undefined, {chord: string}>(
+    ROUTES.JAM_ACTIONS_ADD_CHORD,
+    (req, res) => {
+        const {chord} = req.query;
+        jamState.selectedChords.push(chord);
 
-    res.send(JamView());
-    refreshAll();
-});
+        res.send(JamView());
+        refreshAll();
+    },
+);
 
-jamRouter.post<undefined, JSX.Element>(ROUTES.JAM_ACTIONS_NEW_JAM, (req, res) => {
-    jamState.selectedChords = [];
+jamRouter.post<undefined, JSX.Element>(
+    ROUTES.JAM_ACTIONS_NEW_JAM,
+    (req, res) => {
+        jamState.selectedChords = [];
 
-    res.send(JamView());
-    refreshAll();
-});
+        res.send(JamView());
+        refreshAll();
+    },
+);
 
 export const renderJamPage = () => {
     return JamPage();
@@ -81,18 +76,22 @@ export const renderJamPage = () => {
 export const JamPage = () => {
     return (
         <>
-            <div hx-ws="connect:/jam/ws"/>
+            <div hx-ws='connect:/jam/ws' />
             <JamView />
         </>
-    )
-}
+    );
+};
 
 export const JamView = () => {
     const chordNames = jamState.availableChords;
     const selectedChords = jamState.selectedChords;
 
     return (
-        <div id='jam-view' hx-ws='message:replaceOuterHTML' style={{textAlign: 'center'}}>
+        <div
+            id='jam-view'
+            hx-ws='message:replaceOuterHTML'
+            style={{textAlign: 'center'}}
+        >
             <NewJamButton />
             <ChordSelectorSection availableChords={chordNames} />
             <DraftViewSection selectedChords={selectedChords} />
@@ -104,16 +103,13 @@ const DraftViewSection = (props: {selectedChords: string[]}) => {
     return (
         <div class='drafted-chords'>
             {props.selectedChords.map((chordName) => (
-                <span
-                    class='displayed-chord'
-                    style={{margin: '20px'}}
-                >
+                <span class='displayed-chord' style={{margin: '20px'}}>
                     {chordName}
                 </span>
             ))}
         </div>
     );
-}
+};
 
 const ChordSelectorSection = (props: {availableChords: string[]}) => {
     return (
@@ -129,14 +125,14 @@ const ChordSelectorSection = (props: {availableChords: string[]}) => {
                         maxWidth: '100px',
                         margin: '20px',
                     }}
-                    role="button"
+                    role='button'
                 >
                     {chordName}
                 </button>
             ))}
         </div>
     );
-}
+};
 
 const NewJamButton = () => {
     return (
@@ -150,9 +146,9 @@ const NewJamButton = () => {
                 maxWidth: '100px',
                 margin: '20px',
             }}
-            role="button"
+            role='button'
         >
             {'New Jam'}
         </button>
-    )
+    );
 };
