@@ -1,11 +1,11 @@
-name: Playwright Tests
+name: CI
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
 jobs:
-  playwright-tests:
+  ci:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
