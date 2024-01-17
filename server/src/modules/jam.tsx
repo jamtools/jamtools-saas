@@ -54,9 +54,9 @@ export const initJamRouterWebsocket = () => {
 };
 
 const refreshAll = () => {
-    connectedSockets.forEach((ws) => {
+    for (const ws of connectedSockets) {
         ws.send(JamView().toString());
-    });
+    }
 }
 
 jamRouter.post<undefined, JSX.Element, undefined, {chord: string}>(ROUTES.JAM_ACTIONS_ADD_CHORD, (req, res) => {
@@ -120,8 +120,9 @@ const ChordSelectorSection = (props: {availableChords: string[]}) => {
         <div class='chord-buttons'>
             {props.availableChords.map((chordName) => (
                 <button
+                    type='button'
                     class='chord-button'
-                    hx-post={ROUTES.JAM_ACTIONS_ADD_CHORD + '?chord=' + chordName}
+                    hx-post={`${ROUTES.JAM_ACTIONS_ADD_CHORD}?chord=${chordName}`}
                     hx-target='#jam-view'
                     hx-swap='outerHTML'
                     style={{
@@ -140,6 +141,7 @@ const ChordSelectorSection = (props: {availableChords: string[]}) => {
 const NewJamButton = () => {
     return (
         <button
+            type='button'
             class='chord-button'
             hx-post={ROUTES.JAM_ACTIONS_NEW_JAM}
             hx-target='#jam-view'
