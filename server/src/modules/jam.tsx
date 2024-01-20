@@ -7,23 +7,45 @@ import {WebSocket} from 'ws';
 
 export const jamRouter = express.Router();
 
+jamRouter.use(express.json());
+jamRouter.use(express.urlencoded({ extended: true }));
+
 enum ROUTES {
     JAM_ACTIONS_ADD_CHORD = '/jam/actions/add_chord',
     JAM_ACTIONS_NEW_JAM = '/jam/actions/new_jam',
+    JAM_ACTIONS_CHANGE_KEY = '/jam/actions/change_key',
     JAM_ROOM_WEBSOCKET = '/jam/ws',
 }
 
 type JamState = {
-    availableChords: string[];
+    key: string;
     selectedChords: string[];
 };
 
 const jamState: JamState = {
-    availableChords: ['C', 'Dm', 'Em', 'F', 'G', 'Am'],
+    key: 'C',
     selectedChords: [],
 };
 
 const connectedSockets: WebSocket[] = [];
+
+const all12Notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#','A', 'A#', 'B'];
+
+const scaleDegrees = [0, 2, 4, 5, 7, 9];
+
+const getChordsFromKeyRoot = (keyRoot: string) => {
+    // calculate array of roots based on chords: I ii iii IV V vi
+    const rootsInThisKey = scaleDegrees.map((degree) => {
+        const rootIndex = (all12Notes.indexOf(keyRoot) + degree) % 12;
+        return all12Notes[rootIndex];
+    });
+
+    const chordsInThisKey = rootsInThisKey.map((root) => {
+        const chordType = root === keyRoot ? 'maj' : 'min';
+        return `${root}${chordType}`;
+    });
+    return chordsInThisKey;
+};
 
 export const initJamRouterWebsocket = () => {
     jamRouter.ws(ROUTES.JAM_ROOM_WEBSOCKET, (ws, req) => {
@@ -69,6 +91,14 @@ jamRouter.post<undefined, JSX.Element>(
     },
 );
 
+jamRouter.post<undefined, JSX.Element, {key: string}>(ROUTES.JAM_ACTIONS_CHANGE_KEY, (req, res) => {
+    const {key} = req.body;
+    jamState.key = key;
+
+    res.send(JamView());
+    refreshAll();
+});
+
 export const renderJamPage = () => {
     return JamPage();
 };
@@ -82,9 +112,14 @@ export const JamPage = () => {
     );
 };
 
+type JamViewProps = {
+    key?: string;
+};
+
 export const JamView = () => {
-    const chordNames = jamState.availableChords;
     const selectedChords = jamState.selectedChords;
+    const key = jamState.key;
+    const availableChords = getChordsFromKeyRoot(key);
 
     return (
         <div
@@ -92,8 +127,10 @@ export const JamView = () => {
             hx-ws='message:replaceOuterHTML'
             style={{textAlign: 'center'}}
         >
+            <KeyName root={key} quality='maj' />
+            <ChooseKeySelectBox key={key} />
             <NewJamButton />
-            <ChordSelectorSection availableChords={chordNames} />
+            <ChordSelectorSection availableChords={availableChords} />
             <DraftViewSection selectedChords={selectedChords} />
         </div>
     );
@@ -112,24 +149,29 @@ const DraftViewSection = (props: {selectedChords: string[]}) => {
 };
 
 const ChordSelectorSection = (props: {availableChords: string[]}) => {
+    console.log(props.availableChords);
     return (
         <div class='chord-buttons'>
-            {props.availableChords.map((chordName) => (
-                <button
-                    type='button'
-                    class='chord-button'
-                    hx-post={`${ROUTES.JAM_ACTIONS_ADD_CHORD}?chord=${chordName}`}
-                    hx-target='#jam-view'
-                    hx-swap='outerHTML'
-                    style={{
-                        maxWidth: '100px',
-                        margin: '20px',
-                    }}
-                    role='button'
-                >
-                    {chordName}
-                </button>
-            ))}
+            {props.availableChords.map((chordName) => {
+                const params = new URLSearchParams();
+                params.append('chord', chordName);
+                return (
+                    <button
+                        type='button'
+                        class='chord-button'
+                        hx-post={`${ROUTES.JAM_ACTIONS_ADD_CHORD}?${params.toString()}`}
+                        hx-target='#jam-view'
+                        hx-swap='outerHTML'
+                        style={{
+                            maxWidth: '100px',
+                            margin: '20px',
+                        }}
+                        role='button'
+                    >
+                        {chordName}
+                    </button>
+                );
+})}
         </div>
     );
 };
@@ -150,5 +192,39 @@ const NewJamButton = () => {
         >
             {'New Jam'}
         </button>
+    );
+};
+
+type ChooseKeySelectBoxProps = {
+    key: string;
+};
+
+
+const ChooseKeySelectBox = (props: ChooseKeySelectBoxProps = {key: 'C'}) => {
+    const notes = ['', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A','A#', 'B'];
+    const noteOptions = notes.map((note) => (
+        <option value={note} selected={note === props.key}>
+            {note}
+        </option>
+    ));
+
+    return (
+        <select hx-post='/jam/actions/change_key' hx-trigger='change' name='key'>
+            {noteOptions}
+        </select>
+    );
+};
+
+type KeyNameProps = {
+    root: string;
+    quality: string;
+};
+
+const KeyName = (props: KeyNameProps) => {
+    return (
+        <h1>
+            {props.root}
+            {props.quality}
+        </h1>
     );
 };
