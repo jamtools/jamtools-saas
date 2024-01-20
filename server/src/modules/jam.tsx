@@ -33,6 +33,8 @@ const all12Notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#','A', 'A#', '
 
 const scaleDegrees = [0, 2, 4, 5, 7, 9];
 
+const majorIndexes = [0, 5, 7];
+
 const getChordsFromKeyRoot = (keyRoot: string) => {
     // calculate array of roots based on chords: I ii iii IV V vi
     const rootsInThisKey = scaleDegrees.map((degree) => {
@@ -41,7 +43,7 @@ const getChordsFromKeyRoot = (keyRoot: string) => {
     });
 
     const chordsInThisKey = rootsInThisKey.map((root) => {
-        const chordType = root === keyRoot ? 'maj' : 'min';
+        const chordType = majorIndexes.includes(((all12Notes.indexOf(root) + 12 + all12Notes.indexOf(keyRoot)) % 12)) ? '' : 'm';
         return `${root}${chordType}`;
     });
     return chordsInThisKey;
