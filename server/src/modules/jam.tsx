@@ -5,6 +5,8 @@ import Html from '@kitajs/html';
 import express from 'express';
 import {WebSocket} from 'ws';
 
+import {getChordsFromKeyRoot} from '../utils/music_utils';
+
 export const jamRouter = express.Router();
 
 jamRouter.use(express.json());
@@ -28,26 +30,6 @@ const jamState: JamState = {
 };
 
 const connectedSockets: WebSocket[] = [];
-
-const all12Notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#','A', 'A#', 'B'];
-
-const scaleDegrees = [0, 2, 4, 5, 7, 9];
-
-const majorIndexes = [0, 5, 7];
-
-const getChordsFromKeyRoot = (keyRoot: string) => {
-    // calculate array of roots based on chords: I ii iii IV V vi
-    const rootsInThisKey = scaleDegrees.map((degree) => {
-        const rootIndex = (all12Notes.indexOf(keyRoot) + degree) % 12;
-        return all12Notes[rootIndex];
-    });
-
-    const chordsInThisKey = rootsInThisKey.map((root) => {
-        const chordType = majorIndexes.includes(((all12Notes.indexOf(root) + 12 + all12Notes.indexOf(keyRoot)) % 12)) ? '' : 'm';
-        return `${root}${chordType}`;
-    });
-    return chordsInThisKey;
-};
 
 export const initJamRouterWebsocket = () => {
     jamRouter.ws(ROUTES.JAM_ROOM_WEBSOCKET, (ws, req) => {
@@ -112,10 +94,6 @@ export const JamPage = () => {
             <JamView />
         </>
     );
-};
-
-type JamViewProps = {
-    key?: string;
 };
 
 export const JamView = () => {
