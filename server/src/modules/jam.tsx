@@ -10,7 +10,7 @@ import {getChordsFromKeyRoot} from '../utils/music_utils';
 export const jamRouter = express.Router();
 
 jamRouter.use(express.json());
-jamRouter.use(express.urlencoded({ extended: true }));
+jamRouter.use(express.urlencoded({extended: true}));
 
 enum ROUTES {
     JAM_ACTIONS_ADD_CHORD = '/jam/actions/add_chord',
@@ -75,13 +75,16 @@ jamRouter.post<undefined, JSX.Element>(
     },
 );
 
-jamRouter.post<undefined, JSX.Element, {key: string}>(ROUTES.JAM_ACTIONS_CHANGE_KEY, (req, res) => {
-    const {key} = req.body;
-    jamState.key = key;
+jamRouter.post<undefined, JSX.Element, {key: string}>(
+    ROUTES.JAM_ACTIONS_CHANGE_KEY,
+    (req, res) => {
+        const {key} = req.body;
+        jamState.key = key;
 
-    res.send(JamView());
-    refreshAll();
-});
+        res.send(JamView());
+        refreshAll();
+    },
+);
 
 export const renderJamPage = () => {
     return JamPage();
@@ -139,7 +142,9 @@ const ChordSelectorSection = (props: {availableChords: string[]}) => {
                     <button
                         type='button'
                         class='chord-button'
-                        hx-post={`${ROUTES.JAM_ACTIONS_ADD_CHORD}?${params.toString()}`}
+                        hx-post={`${
+                            ROUTES.JAM_ACTIONS_ADD_CHORD
+                        }?${params.toString()}`}
                         hx-target='#jam-view'
                         hx-swap='outerHTML'
                         style={{
@@ -151,7 +156,7 @@ const ChordSelectorSection = (props: {availableChords: string[]}) => {
                         {chordName}
                     </button>
                 );
-})}
+            })}
         </div>
     );
 };
@@ -179,9 +184,22 @@ type ChooseKeySelectBoxProps = {
     key: string;
 };
 
-
 const ChooseKeySelectBox = (props: ChooseKeySelectBoxProps = {key: 'C'}) => {
-    const notes = ['', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A','A#', 'B'];
+    const notes = [
+        '',
+        'C',
+        'C#',
+        'D',
+        'D#',
+        'E',
+        'F',
+        'F#',
+        'G',
+        'G#',
+        'A',
+        'A#',
+        'B',
+    ];
     const noteOptions = notes.map((note) => (
         <option value={note} selected={note === props.key}>
             {note}
@@ -189,9 +207,15 @@ const ChooseKeySelectBox = (props: ChooseKeySelectBoxProps = {key: 'C'}) => {
     ));
 
     return (
-        <select hx-post='/jam/actions/change_key' hx-trigger='change' name='key'>
-            {noteOptions}
-        </select>
+        <div class='container'>
+            <select
+                hx-post='/jam/actions/change_key'
+                hx-trigger='change'
+                name='key'
+            >
+                {noteOptions}
+            </select>
+        </div>
     );
 };
 
