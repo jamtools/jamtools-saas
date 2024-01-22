@@ -1,4 +1,17 @@
-const all12Notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#','A', 'A#', 'B'];
+const all12Notes = [
+    'C',
+    'C#',
+    'D',
+    'D#',
+    'E',
+    'F',
+    'F#',
+    'G',
+    'G#',
+    'A',
+    'A#',
+    'B',
+];
 
 const scaleDegrees = [0, 2, 4, 5, 7, 9] as const;
 const scaleDegreeQualities = ['', 'm', 'm', '', '', 'm'] as const;
