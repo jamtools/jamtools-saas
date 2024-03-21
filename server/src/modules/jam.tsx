@@ -29,11 +29,19 @@ const jamState: JamState = {
     selectedChords: [],
 };
 
-const connectedSockets: WebSocket[] = [];
+type ConnectedUser = {
+    name: string;
+    ws: WebSocket;
+}
+
+const connectedSockets: ConnectedUser[] = [];
 
 export const initJamRouterWebsocket = () => {
     jamRouter.ws(ROUTES.JAM_ROOM_WEBSOCKET, (ws, req) => {
-        connectedSockets.push(ws);
+        connectedSockets.push({
+            name: req.cookies.name,
+            ws,
+        });
         console.log('ws connected');
         ws.send(JamView().toString());
 
@@ -43,14 +51,14 @@ export const initJamRouterWebsocket = () => {
 
         ws.on('close', () => {
             console.log('ws closed');
-            connectedSockets.splice(connectedSockets.indexOf(ws), 1);
+            connectedSockets.splice(connectedSockets.findIndex(u => u.ws === ws), 1);
         });
     });
 };
 
 const refreshAll = () => {
-    for (const ws of connectedSockets) {
-        ws.send(JamView().toString());
+    for (const u of connectedSockets) {
+       u.ws.send(JamView().toString());
     }
 };
 
@@ -110,6 +118,7 @@ export const JamView = () => {
             hx-ws='message:replaceOuterHTML'
             style={{textAlign: 'center'}}
         >
+            <JamUsersView />
             <KeyName root={key} quality='maj' />
             <ChooseKeySelectBox key={key} />
             <NewJamButton />
@@ -118,6 +127,18 @@ export const JamView = () => {
         </div>
     );
 };
+
+const JamUsersView = () => {
+    return (
+        <div>
+            <ul>
+                {connectedSockets.map((user) => (
+                    <li>{user.name}</li>
+                ))}
+            </ul>
+        </div>
+    );
+}
 
 const DraftViewSection = (props: {selectedChords: string[]}) => {
     return (

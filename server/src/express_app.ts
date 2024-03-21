@@ -1,6 +1,8 @@
 import express, {Router} from 'express';
 import expressWs from 'express-ws';
 
+import cookieParser from 'cookie-parser';
+
 import {initJamRouterWebsocket, jamRouter, renderJamPage} from './modules/jam';
 import {loginRouter, renderLoginPage} from './modules/login';
 import {AppDependencies} from './types/app_dependencies';
@@ -18,6 +20,8 @@ const handlePage =
 
 export const initApp = (deps: AppDependencies) => {
     const app = expressWs(express()).app;
+
+    app.use(cookieParser());
 
     app.get('/', handlePage(renderLoginPage));
 
