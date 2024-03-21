@@ -8,6 +8,7 @@ export const loginRouter = express.Router();
 const loginSubmissionRoute = '/forms/login_submission';
 
 loginRouter.post(loginSubmissionRoute, (req, res) => {
+    res.cookie('name',req.body.firstname, { maxAge: 900000, httpOnly: true });
     res.redirect('/jam');
 });
 
