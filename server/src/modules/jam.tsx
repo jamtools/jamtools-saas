@@ -53,6 +53,8 @@ export const initJamRouterWebsocket = () => {
             console.log('ws closed');
             connectedSockets.splice(connectedSockets.findIndex(u => u.ws === ws), 1);
         });
+
+        refreshAll();
     });
 };
 
